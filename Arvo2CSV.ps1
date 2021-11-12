@@ -1,6 +1,14 @@
 import-module PowerHTML
 # tallenna arvojärjestelmssä käytetty tunnus seuraavasti tiedostoon
 # get-credential | export-clixml opintopolku.xml
+if (-not (Test-path -Path "opintopolku.xml" -PathType leaf)) {
+    $virhe = @"
+tallenna arvojärjestelmssä käytetty tunnus seuraavasti tiedostoon
+"get-credential | export-clixml opintopolku.xml"
+ja yritä scriptin ajoa uudelleen
+"@
+    throw $virhe           
+}
 
 $cred = import-clixml "opintopolku.xml"
 
