@@ -1,12 +1,15 @@
 # Arvo2CSV
 Pieni powershell scripti arvo-kyselyiden tulosten hakemiseen csv muodossa.
 
+Scripti autentikoi arvo-palveluun ja käyttää samoja api-päätepisteitä
+kuin mikä ovat käytössä kun palvelua käyttää verkkoselaimen kanssa.
+
 ## Vaatimukset
 Powershell 7.0 ja PowerHTML moduuli asennettuna
 
 ## valmistelu
 ### Yhteystunnus
-tallenna arvojärjestelmssä käytetty tunnus seuraavasti tiedostoon
+tallenna arvojärjestelmässä käytetty tunnus seuraavasti tiedostoon
 samaan kansioon missä scriptikin on
 ```powershell
 get-credential | export-clixml opintopolku.xml
