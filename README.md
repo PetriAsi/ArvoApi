@@ -1,5 +1,5 @@
 # Arvo2CSV
-Pieni powershell scripti arvo kyleiden tulosten hakemiseen
+Pieni powershell scripti arvo-kyselyiden tulosten hakemiseen csv muodossa.
 
 ## Vaatimukset
 Powershell 7.0 ja PowerHTML moduuli asennettuna
@@ -19,10 +19,12 @@ $saveTo = "Arvosta"
 ```
 
 ## Scriptin ajaminen
-Suorita scripti powershell konsolista tai ajastetusti miten haluat
-tuloksena pitäsi olla kansiorakenne joka jokainen sisältää kyselyn 
+Suorita scripti powershell konsolista tai ajastetusti miten haluatkin.
+Tuloksena pitäisi olla kansiorakenne joka jokainen sisältää kyselyn 
 csv tiedostot.
 
+Kyselyistä haetaan seuraavilla ajokerroilla vain ne joihin on tullut
+uusia vastauksia.
 ```powershell
 Get-ChildItem .\Arvosta\
 
