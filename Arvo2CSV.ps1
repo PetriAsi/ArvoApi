@@ -38,7 +38,7 @@ if (-not (Test-Path $saveTo -PathType Container) ) {
 }
 
 try {
-    $logininfo = Invoke-WebRequest -Uri $loginUrl -SessionVariable OpSession
+    $logininfo = Invoke-WebRequest -Uri $loginUrl -SessionVariable OpSession 
 
     $execution = ($logininfo.Content | ConvertFrom-HTML).SelectSingleNode('//*[@id="fm1"]/input[1]' ).GetAttributeValue('Value','')
 
@@ -62,7 +62,7 @@ try {
     }
 
 
-    $loginResult = Invoke-WebRequest -Headers $headers -Form $loginParms -Uri $loginUrl -WebSession $OpSession 
+    $loginResult = Invoke-WebRequest -Method POST -Headers $headers -Body $loginParms -Uri $loginUrl -WebSession $OpSession 
     $arvo = Invoke-WebRequest -Uri $arvourl -Headers $arvoh -WebSession $OpSession 
 
     $arvoh['X-XSRF-TOKEN'] = $Opsession.Cookies.GetCookies($arvourl)['XSRF-TOKEN'].Value
