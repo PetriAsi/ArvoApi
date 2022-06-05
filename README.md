@@ -52,3 +52,15 @@ d----          12.11.2021     9.56                Opiskelijapalaute - ammatillis
 d----          12.11.2021     9.56                TYÖPAIKKAOHJAAJAKYSELY
 -a---          12.11.2021     9.57         262929 tallennetut.xml
 ```
+
+## Azure strorage ja Power bi
+Milestäni helpoin tapa saada cvs tiedot Power Bi:n saataville on ajaa tämä scripti azuressa virtualikoneessa. Virtuaalikonelle kun
+määrittää järjestelmän liitetyn identiteetin (system assigned identity) voi sitten Azure Data Lakessa antaa virtuallikoneelle suoran oikeuden
+ladata tiedostoja haluamaansa tiedostosäilöön.
+
+Tämän jälkeen ei tavitse kuin kopioida azcopy.exe samaan kansioon kuin missä scriptiä ajetettaan ja lisätä scriptin perään seuraavat rivit
+tiedotojen kopioimiseksi azure data lakeen.
+```powershell
+.\azcopy.exe login --identity
+.\azcopy.exe sync .\Arvosta 'https://[OMASTORAGENIMI].blob.core.windows.net/[SÄILÖNNIMI]'
+```
