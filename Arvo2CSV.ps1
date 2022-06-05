@@ -111,9 +111,10 @@ $toget | ForEach-Object {
     $kid =  $get.kyselyid
     $edellinen = $edelliset |Where-Object {$_.kyselyid -eq $get.kyselyid }
     $nimi = Join-Path  -path $saveTo -ChildPath ($_.nimi_fi -replace ':','-')
-    if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
             
     if ($get.viimeisin_vastaus -ne $edellinen.viimeisin_vastaus) {
+        if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
+    
         foreach ($key in ('kysely','kohteet','vastauksittain','vastanneet')){
             $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat[$key] -replace 'KYSID',$kid) -WebSession $OpSession 
             [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( $key + '-' + $kid + '.csv')) -Encoding utf8BOM
@@ -124,6 +125,8 @@ $toget | ForEach-Object {
     #vastustunnukset
     if ($null -ne $get.kyselykerrat) {
         foreach ( $kk in ($get.kyselykerrat | where-object { $_.kaytettavissa -eq $true})){
+            if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
+    
             $kkid = $kk.kyselykertaid
             $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat['vastaustunnukset'] -replace 'KYSID',$kkid) -WebSession $OpSession 
             [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')) -Encoding utf8BOM        
