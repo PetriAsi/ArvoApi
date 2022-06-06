@@ -128,8 +128,11 @@ $toget | ForEach-Object {
             if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
     
             $kkid = $kk.kyselykertaid
-            $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat['vastaustunnukset'] -replace 'KYSID',$kkid) -WebSession $OpSession 
-            [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')) -Encoding utf8BOM        
+            #hae vain jos on tullut uusia vastaajatunnuksia
+            if ($kk.vastaajatunnuksia -ne ($edellinen.kyselykerrat | where-object {$_.kyselykertaid -eq $kkid}).vastaajatunnuksia ) {
+                $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat['vastaustunnukset'] -replace 'KYSID',$kkid) -WebSession $OpSession 
+                [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')) -Encoding utf8BOM        
+            }
         }
     }
 }
