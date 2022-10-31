@@ -12,10 +12,15 @@ Powershell 7.0 ja PowerHTML moduuli asennettuna
 ## valmistelu
 ### Yhteystunnus
 tallenna arvojärjestelmässä käytetty tunnus seuraavasti tiedostoon
-samaan kansioon missä scriptikin on
+samaan kansioon missä scriptikin on. 
+
 ```powershell
 get-credential | export-clixml opintopolku.xml
 ```
+Kyseisellä tunnuksella pitää olla
+vastuukäyttäjärooli arvoon , jolloin csv raportit näkyvät arvossa ja
+ovat ladattavissa.
+
 ### tallenushakemisto
 Scripti tallentaa kyselyiden tulokset Arvosta kansioon, jos haluat
 muuttaa tallenuspaikkaa muokkaa scriptin alussa olevaa riviä:
