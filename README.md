@@ -1,5 +1,5 @@
 # Arvo2CSV
-## Tämä ei toimi täällä hetkellä johtuen arvo palveluun tehdyistä muutoksista.
+
 
 Pieni powershell scripti arvo-kyselyiden tulosten hakemiseen csv muodossa.
 
