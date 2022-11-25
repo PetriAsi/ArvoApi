@@ -77,7 +77,7 @@ $haettavat = @{
     'vastauksittain' = "$arvourl/api/csv/kysely/vastauksittain/KYSID?lang=fi"
     'kohteet' = "$arvourl/api/csv/kysely/kohteet/KYSID?lang=fi"
     'vastanneet' = "$arvourl/api/csv/kysely/vastaajat/KYSID?lang=fi"
-    'vastaustunnukset' = "$arvourl/api/vastaajatunnus/KYSID?lang=fi"
+    'vastaustunnukset' = "$arvourl/api/csv/vastaajatunnus/KYSID?lang=fi"
 }
 
 
