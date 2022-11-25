@@ -1,3 +1,7 @@
+param(
+    [bool]$kaikkivastaustunnukset=$false
+)
+
 import-module PowerHTML
 # tallenna arvojärjestelmssä käytetty tunnus seuraavasti tiedostoon
 # get-credential | export-clixml opintopolku.xml
@@ -124,7 +128,7 @@ $toget | ForEach-Object {
 
     #vastustunnukset
     if ($null -ne $get.kyselykerrat) {
-        foreach ( $kk in ($get.kyselykerrat | where-object { $_.kaytettavissa -eq $true})){
+        foreach ( $kk in ($get.kyselykerrat | where-object { ($_.kaytettavissa -eq $true)  -or $kaikkivastaustunnukset })){
             if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
     
             $kkid = $kk.kyselykertaid
