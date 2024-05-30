@@ -1,3 +1,4 @@
+[CmdletBinding()]
 param(
     [bool]$kaikkivastaustunnukset=$false
 )
@@ -114,9 +115,9 @@ $toget | ForEach-Object {
     $get = $_
     $kid =  $get.kyselyid
     $edellinen = $edelliset |Where-Object {$_.kyselyid -eq $get.kyselyid }
-    $nimi = Join-Path  -path $saveTo -ChildPath ($_.nimi_fi -replace ':','-')
-            
-    if ($get.viimeisin_vastaus -ne $edellinen.viimeisin_vastaus) {
+    $nimi = Join-Path  -path $saveTo -ChildPath ($_.nimi.fi -replace ':','-')
+    Write-Verbose "Tallennetaan kid: $($kid) polkuun: $($nimi)"        
+    if ($null -ne $get.viimeisin_vastaus -and $get.viimeisin_vastaus -ne $edellinen.viimeisin_vastaus) {
         if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
     
         foreach ($key in ('kysely','kohteet','vastauksittain','vastanneet')){
@@ -128,12 +129,13 @@ $toget | ForEach-Object {
 
     #vastustunnukset
     if ($null -ne $get.kyselykerrat) {
-        foreach ( $kk in ($get.kyselykerrat | where-object { ($_.kaytettavissa -eq $true)  -or $kaikkivastaustunnukset })){
+        #avoinnaolevat tai tulevat
+      foreach ( $kk in ($get.kyselykerrat | where-object { ($_.kaytettavissa -eq $true) -or ( $_.kaytettavissa -eq $false -and [datetime]$_.voimassa_alkupvm -gt (get-date)) -or $kaikkivastaustunnukset})){
             if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
     
             $kkid = $kk.kyselykertaid
             #hae vain jos on tullut uusia vastaajatunnuksia
-            if ($kk.vastaajatunnuksia -ne ($edellinen.kyselykerrat | where-object {$_.kyselykertaid -eq $kkid}).vastaajatunnuksia ) {
+            if (($kk.vastaajatunnuksia -ne ($edellinen.kyselykerrat | where-object {$_.kyselykertaid -eq $kkid}).vastaajatunnuksia ) -or $kaikkivastaustunnukset) {
                 $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat['vastaustunnukset'] -replace 'KYSID',$kkid) -WebSession $OpSession 
                 [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')) -Encoding utf8BOM        
             }
