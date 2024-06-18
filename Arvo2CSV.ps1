@@ -82,7 +82,7 @@ $haettavat = @{
     'vastauksittain' = "$arvourl/api/csv/kysely/vastauksittain/KYSID?lang=fi"
     'kohteet' = "$arvourl/api/csv/kysely/kohteet/KYSID?lang=fi"
     'vastanneet' = "$arvourl/api/csv/kysely/vastaajat/KYSID?lang=fi"
-    'vastaustunnukset' = "$arvourl/api/csv/vastaajatunnus/KYSID?lang=fi"
+    'vastaustunnukset' = "$arvourl/api/csv/vastaajat/KYSID?lang=fi"
 }
 
 
@@ -122,23 +122,42 @@ $toget | ForEach-Object {
     
         foreach ($key in ('kysely','kohteet','vastauksittain','vastanneet')){
             $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat[$key] -replace 'KYSID',$kid) -WebSession $OpSession 
-            [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( $key + '-' + $kid + '.csv')) -Encoding utf8BOM
+            $tallennnustiedosto = Join-Path -Path $nimi -ChildPath ( $key + '-' + $kid + '.csv')
+            [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File $tallennnustiedosto -Encoding utf8BOM
+            if ( (Get-Content $tallennnustiedosto | measure-object).count -eq 1) {
+                Remove-Item $tallennnustiedosto -Force
+            }
             #$response.headers | fl   
         }
     }
 
     #vastustunnukset
     if ($null -ne $get.kyselykerrat) {
-        #avoinnaolevat tai tulevat
+      #avoinnaolevat tai tulevat
       foreach ( $kk in ($get.kyselykerrat | where-object { ($_.kaytettavissa -eq $true) -or ( $_.kaytettavissa -eq $false -and [datetime]$_.voimassa_alkupvm -gt (get-date)) -or $kaikkivastaustunnukset})){
             if ( -not (Test-Path  $nimi)) { new-item -Name $nimi -ItemType Directory}
     
             $kkid = $kk.kyselykertaid
+            Write-verbose "Vastaajatunnukset kysely $($kid) - kerta $($kkid))"
             #hae vain jos on tullut uusia vastaajatunnuksia
+            
             if (($kk.vastaajatunnuksia -ne ($edellinen.kyselykerrat | where-object {$_.kyselykertaid -eq $kkid}).vastaajatunnuksia ) -or $kaikkivastaustunnukset) {
-                $response = Invoke-WebRequest -headers $arvoh -Uri ($haettavat['vastaustunnukset'] -replace 'KYSID',$kkid) -WebSession $OpSession 
-                [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File (Join-Path -Path $nimi -ChildPath ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')) -Encoding utf8BOM        
+                    $lähde = ($haettavat['vastaustunnukset'] -replace 'KYSID',$kid) 
+                    $kohde = ( 'vastaustunnukset-' + $kid + '-' + $kkid +'.csv')
+                    $response = Invoke-WebRequest -headers $arvoh -Uri $lähde -WebSession $OpSession 
+                    $tallennnustiedosto = Join-Path -Path $nimi -ChildPath $kohde
+                    [System.IO.StreamReader]::new($response.RawContentStream).ReadToEnd()| Out-File $tallennnustiedosto -Encoding utf8BOM
+                    if ( (Get-Content $tallennnustiedosto | measure-object).count -eq 1) {
+                        Write-Error "Tiedosto tyhjä $($tallennnustiedosto)"
+                        Remove-Item $tallennnustiedosto -Force
+                    } else {
+                        #kaikki tunnukset palautuvat nyt yhdellä kyselyllä, voimme poistua
+                        Write-Verbose "Tallennettu tiedostoon $($tallennnustiedosto)"
+                        break
+                    }
+                        
             }
+    
         }
     }
 }
